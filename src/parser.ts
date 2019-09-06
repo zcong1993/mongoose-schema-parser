@@ -189,11 +189,12 @@ const getMongooseArrayType = (arrayDetails: any): PropertyType => {
     // ignore details.name if name is schemas property
     const isNameSchemaProperty =
       ['object', 'function'].indexOf(typeof details.name) !== -1
-    let arrayContentType = !isNameSchemaProperty
-      ? getTypeFromString(details.name)
-      : undefined
 
-    if (!arrayContentType) {
+    let arrayContentType: TypeEnum = !isNameSchemaProperty
+      ? getTypeFromString(details.name)
+      : TypeEnum.Unknown
+
+    if (arrayContentType === TypeEnum.Unknown) {
       // I am assuming it goes for schema, if Object is present inside Array type definition (e.g. field:[{...objProps...}])
       arrayContentType =
         details.constructor.name === 'Object'
