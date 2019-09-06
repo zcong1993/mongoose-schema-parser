@@ -47,13 +47,15 @@ const getTypeFromString = (type: string): TypeEnum => {
 }
 
 export const getSchemaObject = (schema: Schema | Schema[]) => {
-  let obj: any = undefined
+  let obj: any = {}
   if (Array.isArray(schema)) {
     obj = schema[0].obj ? schema[0].obj : schema[0]
   } else if (schema.obj) {
     obj = schema.obj
   } else if ((schema as any).type) {
     obj = getSchemaObject((schema as any).type)
+  } else {
+    obj = schema
   }
 
   return obj
