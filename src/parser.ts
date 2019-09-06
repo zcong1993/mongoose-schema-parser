@@ -19,12 +19,14 @@ export interface PropertyType {
   isArray?: boolean
 }
 
+export interface ParsedField {
+  type: PropertyType
+  details?: SchemaTypeOpts<any> & { required: boolean }
+  schema?: ParsedType
+}
+
 export interface ParsedType {
-  [key: string]: {
-    type: PropertyType
-    details?: SchemaTypeOpts<any> & { required: boolean }
-    schema?: ParsedType
-  }
+  [key: string]: ParsedField
 }
 
 const getTypeFromString = (type: string): TypeEnum => {
