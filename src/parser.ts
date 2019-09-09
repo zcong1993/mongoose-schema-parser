@@ -95,6 +95,7 @@ export const parseSchema = (schema: Schema): ParsedType => {
 
     // check if nested schema
     if (propertyType.type === TypeEnum.Schema && propertyType.isArray) {
+      // console.log(propertyType, property)
       parsedSchema[propertyName].schema = parseSchema(property)
     }
   })
@@ -204,6 +205,13 @@ const getMongooseArrayType = (arrayDetails: any): PropertyType => {
         details.constructor.name === 'Object'
           ? TypeEnum.Schema
           : getTypeFromString(details.constructor.name)
+
+      if (details.type && details.type.constructor.name !== 'Object') {
+        // [{ type: ObjectId }] without [{ type: { type: String } }]
+        const innerType = getPropertyType(details.type)
+
+        arrayContentType = innerType.type
+      }
     }
 
     type.type = arrayContentType
