@@ -1,6 +1,6 @@
 {
   "name": "@zcong/mongoose-schema-parser",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "simple mongoose schema parser",
   "main": "./dist/index.js",
   "files": [
