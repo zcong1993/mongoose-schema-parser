@@ -4,6 +4,49 @@
 
 > simple mongoose schema parser
 
+## Install
+
+```bash
+$ yarn add @zcong/mongoose-schema-parser
+```
+
+## Usage
+
+```ts
+import { parseSchema } from '@zcong/mongoose-schema-parser'
+
+const testSchema = new Schema({
+  id: ObjectId,
+  name: String,
+  age: {
+    type: Number
+  }
+})
+
+console.log(parseSchema(testSchema))
+// {
+//   id: {
+//     type: {
+//       type: TypeEnum.ObjectId,
+//       isArray: false
+//     }
+//   },
+//   name: {
+//     type: {
+//       type: TypeEnum.String,
+//       isArray: false
+//     }
+//   },
+//   age: {
+//     type: {
+//       type: TypeEnum.Number,
+//       isArray: false
+//     },
+//     details: {}
+//   }
+// }
+```
+
 ## License
 
 MIT &copy; zcong1993
