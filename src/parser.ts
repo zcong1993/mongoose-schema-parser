@@ -80,7 +80,7 @@ export const parseSchema = (schema: Schema): ParsedType => {
     }
 
     // parse Schema
-    if (propertyType.type === TypeEnum.Schema) {
+    if (propertyType.type === TypeEnum.Schema && !propertyType.isArray) {
       // normal schema
       let propSchema
       if (property.hasOwnProperty('obj') || property.hasOwnProperty('type')) {
