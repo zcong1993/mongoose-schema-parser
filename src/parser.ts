@@ -21,7 +21,7 @@ export interface PropertyType {
 
 export interface ParsedField {
   type: PropertyType
-  details?: SchemaTypeOpts<any> & { required: boolean }
+  details?: SchemaTypeOpts<any> & { required?: boolean }
   schema?: ParsedType
 }
 
