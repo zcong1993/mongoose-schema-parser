@@ -1,0 +1,327 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`v2 should works well 1`] = `
+Object {
+  "_id": Object {
+    "options": Object {
+      "required": false,
+    },
+    "type": Object {
+      "isArray": false,
+      "type": "ObjectID",
+    },
+  },
+  "age": Object {
+    "options": Object {
+      "required": false,
+    },
+    "type": Object {
+      "isArray": false,
+      "type": "Number",
+    },
+  },
+  "bool": Object {
+    "options": Object {
+      "required": false,
+    },
+    "type": Object {
+      "isArray": false,
+      "type": "Boolean",
+    },
+  },
+  "created_at": Object {
+    "options": Object {
+      "required": false,
+    },
+    "type": Object {
+      "isArray": false,
+      "type": "Date",
+    },
+  },
+  "date": Object {
+    "options": Object {
+      "required": false,
+    },
+    "type": Object {
+      "isArray": false,
+      "type": "Date",
+    },
+  },
+  "directNested": Object {
+    "schema": Object {
+      "age": Object {
+        "options": Object {
+          "required": false,
+        },
+        "type": Object {
+          "isArray": false,
+          "type": "Number",
+        },
+      },
+      "name": Object {
+        "options": Object {
+          "required": false,
+        },
+        "type": Object {
+          "isArray": false,
+          "type": "String",
+        },
+      },
+    },
+    "type": Object {
+      "isArray": false,
+      "type": "Embedded",
+    },
+  },
+  "directNestedArr": Object {
+    "options": Object {
+      "required": false,
+    },
+    "schema": Object {
+      "_id": Object {
+        "options": Object {
+          "required": false,
+        },
+        "type": Object {
+          "isArray": false,
+          "type": "ObjectID",
+        },
+      },
+      "age": Object {
+        "options": Object {
+          "required": false,
+        },
+        "type": Object {
+          "isArray": false,
+          "type": "Number",
+        },
+      },
+      "name": Object {
+        "options": Object {
+          "required": false,
+        },
+        "type": Object {
+          "isArray": false,
+          "type": "String",
+        },
+      },
+    },
+    "type": Object {
+      "isArray": true,
+      "type": "Schema",
+    },
+  },
+  "enumString": Object {
+    "options": Object {
+      "required": false,
+    },
+    "type": Object {
+      "enumValues": Array [
+        "test1",
+        "test2",
+      ],
+      "isArray": false,
+      "type": "String",
+    },
+  },
+  "id": Object {
+    "options": Object {
+      "required": false,
+    },
+    "type": Object {
+      "isArray": false,
+      "type": "ObjectID",
+    },
+  },
+  "name": Object {
+    "options": Object {
+      "required": false,
+    },
+    "type": Object {
+      "isArray": false,
+      "type": "String",
+    },
+  },
+  "nested": Object {
+    "options": Object {
+      "required": false,
+    },
+    "schema": Object {
+      "_id": Object {
+        "options": Object {
+          "required": false,
+        },
+        "type": Object {
+          "isArray": false,
+          "type": "ObjectID",
+        },
+      },
+      "nestedName": Object {
+        "options": Object {
+          "required": false,
+        },
+        "type": Object {
+          "isArray": false,
+          "type": "String",
+        },
+      },
+    },
+    "type": Object {
+      "isArray": false,
+      "type": "Embedded",
+    },
+  },
+  "nestedArr": Object {
+    "options": Object {
+      "required": false,
+    },
+    "schema": Object {
+      "_id": Object {
+        "options": Object {
+          "required": false,
+        },
+        "type": Object {
+          "isArray": false,
+          "type": "ObjectID",
+        },
+      },
+      "nestedName": Object {
+        "options": Object {
+          "required": false,
+        },
+        "type": Object {
+          "isArray": false,
+          "type": "String",
+        },
+      },
+    },
+    "type": Object {
+      "isArray": true,
+      "type": "Schema",
+    },
+  },
+  "nestedArr2": Object {
+    "options": Object {
+      "required": false,
+    },
+    "schema": Object {
+      "_id": Object {
+        "options": Object {
+          "required": false,
+        },
+        "type": Object {
+          "isArray": false,
+          "type": "ObjectID",
+        },
+      },
+      "nestedName": Object {
+        "options": Object {
+          "required": false,
+        },
+        "type": Object {
+          "isArray": false,
+          "type": "String",
+        },
+      },
+    },
+    "type": Object {
+      "isArray": true,
+      "type": "Schema",
+    },
+  },
+  "ref": Object {
+    "options": Object {
+      "ref": "Ref",
+      "required": false,
+    },
+    "type": Object {
+      "isArray": false,
+      "type": "ObjectID",
+    },
+  },
+  "refs": Object {
+    "options": Object {
+      "ref": "Ref",
+      "required": false,
+    },
+    "type": Object {
+      "isArray": true,
+      "type": "ObjectID",
+    },
+  },
+  "requiredName": Object {
+    "options": Object {
+      "required": true,
+    },
+    "type": Object {
+      "isArray": false,
+      "type": "String",
+    },
+  },
+  "simpleArr": Object {
+    "options": Object {
+      "required": false,
+    },
+    "type": Object {
+      "isArray": true,
+      "type": "String",
+    },
+  },
+  "simpleArr2": Object {
+    "options": Object {
+      "required": false,
+    },
+    "type": Object {
+      "isArray": true,
+      "type": "String",
+    },
+  },
+  "updated_at": Object {
+    "options": Object {
+      "required": false,
+    },
+    "type": Object {
+      "isArray": false,
+      "type": "Date",
+    },
+  },
+  "withTypeField": Object {
+    "options": Object {
+      "required": false,
+    },
+    "schema": Object {
+      "_id": Object {
+        "options": Object {
+          "required": false,
+        },
+        "type": Object {
+          "isArray": false,
+          "type": "ObjectID",
+        },
+      },
+      "other": Object {
+        "options": Object {
+          "required": false,
+        },
+        "type": Object {
+          "isArray": false,
+          "type": "String",
+        },
+      },
+      "type": Object {
+        "options": Object {
+          "required": false,
+        },
+        "type": Object {
+          "isArray": false,
+          "type": "String",
+        },
+      },
+    },
+    "type": Object {
+      "isArray": true,
+      "type": "Schema",
+    },
+  },
+}
+`;
