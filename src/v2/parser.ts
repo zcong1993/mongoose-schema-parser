@@ -80,6 +80,10 @@ export const parseSchema = (schema: Schema): ParsedType => {
       } else if (opt.$isMongooseArray) {
         res[field] = simpleType(opt.caster)
         res[field].type.isArray = true
+      } else {
+        console.warn(
+          `unhandled field: ${field}, ${JSON.stringify(opt, null, 2)}`
+        )
       }
     }
   })
