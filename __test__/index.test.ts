@@ -145,6 +145,7 @@ const expectResult: ParsedType = {
     }
   },
   nestedArr2: {
+    details: {},
     type: {
       type: TypeEnum.Schema,
       isArray: true
@@ -173,6 +174,7 @@ const expectResult: ParsedType = {
     }
   },
   simpleArr2: {
+    details: {},
     type: {
       type: TypeEnum.String,
       isArray: true
@@ -228,12 +230,18 @@ const expectResult: ParsedType = {
     }
   },
   refs: {
+    details: {
+      ref: 'Test'
+    },
     type: {
       type: TypeEnum.ObjectId,
       isArray: true
     }
   },
   withTypeField: {
+    details: {
+      other: String
+    },
     type: {
       type: TypeEnum.Schema,
       isArray: true

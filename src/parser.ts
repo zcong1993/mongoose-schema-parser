@@ -103,7 +103,13 @@ export const parseSchema = (schema: Schema): ParsedType => {
   return parsedSchema
 }
 
-export const parsePropertyDetails = (property: any) => {
+export const parsePropertyDetails = (p: any) => {
+  let property: any
+  if (Array.isArray(p) && p.length > 0) {
+    property = p[0]
+  } else {
+    property = p
+  }
   if (!property.type) {
     return undefined
   }
