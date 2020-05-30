@@ -73,6 +73,48 @@ const testSchema = new Schema(
         },
         other: String
       }
+    ],
+    receiver: {
+      receiverType: {
+        type: String,
+        enum: ['all', 'tag']
+      },
+      receiverValue: {
+        tagAnd: {
+          type: [String],
+          default: []
+        },
+        tagOr: {
+          type: [String],
+          default: []
+        },
+        tagNot: {
+          type: [String],
+          default: []
+        }
+      }
+    },
+    receivers: [
+      {
+        receiverType: {
+          type: String,
+          enum: ['all', 'tag']
+        },
+        receiverValue: {
+          tagAnd: {
+            type: [String],
+            default: []
+          },
+          tagOr: {
+            type: [String],
+            default: []
+          },
+          tagNot: {
+            type: [String],
+            default: []
+          }
+        }
+      }
     ]
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }

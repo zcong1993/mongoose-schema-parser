@@ -36,47 +36,52 @@ const simpleType = (opt: any) => {
   return pf
 }
 
-const directNestedFields: Map<any, any> = new Map()
+const unflatten = (data: any): any => {
+  const result: any = {}
+  for (const i in data) {
+    const keys = i.split('.')
+    keys.reduce((r, e, j) => {
+      return (
+        r[e] ||
+        (r[e] = isNaN(Number(keys[j + 1]))
+          ? keys.length - 1 === j
+            ? data[i]
+            : { __flattened__: true }
+          : [])
+      )
+    }, result)
+  }
+  return result
+}
 
-export const parseSchema = (schema: Schema): ParsedType => {
-  const paths = (schema as any).paths
+const parsePaths = (rawPaths: any): ParsedType => {
+  const paths = unflatten(rawPaths)
   const res: ParsedType = {}
-
   Object.keys(paths).forEach((field: string) => {
     const opt = paths[field]
-    // direct nested
-    if (field.includes('.')) {
-      const f = field.split('.')
-      if (f.length !== 2) {
-        throw new Error(`invalid direct nested name: ${field}`)
+
+    if (opt.__flattened__) {
+      delete opt.__flattened__
+      res[field] = {
+        type: {
+          type: 'Embedded',
+          isArray: false
+        },
+        schema: parsePaths(opt)
       }
-
-      if (!directNestedFields.has(schema)) {
-        directNestedFields.set(schema, {})
-      }
-
-      const fieldStore = directNestedFields.get(schema)
-
-      if (!fieldStore[f[0]]) {
-        fieldStore[f[0]] = {}
-      }
-
-      fieldStore[f[0]][f[1]] = opt
-      return
-    }
-    if (
+    } else if (
       ['ObjectID', 'String', 'Number', 'Date', 'Boolean'].includes(opt.instance)
     ) {
       res[field] = simpleType(opt)
     } else if (opt.instance === 'Embedded') {
       res[field] = simpleType(opt)
-      res[field].schema = parseSchema(opt.schema)
+      res[field].schema = parsePaths(opt.schema.paths)
     } else if (opt.instance === 'Array') {
       if (opt.$isMongooseDocumentArray) {
         res[field] = simpleType(opt)
         res[field].type.type = 'Schema'
         res[field].type.isArray = true
-        res[field].schema = parseSchema(opt.schema)
+        res[field].schema = parsePaths(opt.schema.paths)
       } else if (opt.$isMongooseArray) {
         res[field] = simpleType(opt.caster)
         res[field].type.isArray = true
@@ -88,17 +93,9 @@ export const parseSchema = (schema: Schema): ParsedType => {
     }
   })
 
-  directNestedFields.has(schema) &&
-    Object.keys(directNestedFields.get(schema)).forEach((field: string) => {
-      const opt = directNestedFields.get(schema)[field]
-      res[field] = {
-        type: {
-          type: 'Embedded',
-          isArray: false
-        }
-      }
-      res[field].schema = parseSchema({ paths: opt } as any)
-    })
-
   return res
+}
+
+export const parseSchema = (schema: Schema): ParsedType => {
+  return parsePaths((schema as any).paths)
 }

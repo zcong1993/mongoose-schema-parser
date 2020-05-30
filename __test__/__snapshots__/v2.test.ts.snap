@@ -229,6 +229,130 @@ Object {
       "type": "Schema",
     },
   },
+  "receiver": Object {
+    "schema": Object {
+      "receiverType": Object {
+        "options": Object {
+          "required": false,
+        },
+        "type": Object {
+          "enumValues": Array [
+            "all",
+            "tag",
+          ],
+          "isArray": false,
+          "type": "String",
+        },
+      },
+      "receiverValue": Object {
+        "schema": Object {
+          "tagAnd": Object {
+            "options": Object {
+              "required": false,
+            },
+            "type": Object {
+              "isArray": true,
+              "type": "String",
+            },
+          },
+          "tagNot": Object {
+            "options": Object {
+              "required": false,
+            },
+            "type": Object {
+              "isArray": true,
+              "type": "String",
+            },
+          },
+          "tagOr": Object {
+            "options": Object {
+              "required": false,
+            },
+            "type": Object {
+              "isArray": true,
+              "type": "String",
+            },
+          },
+        },
+        "type": Object {
+          "isArray": false,
+          "type": "Embedded",
+        },
+      },
+    },
+    "type": Object {
+      "isArray": false,
+      "type": "Embedded",
+    },
+  },
+  "receivers": Object {
+    "options": Object {
+      "required": false,
+    },
+    "schema": Object {
+      "_id": Object {
+        "options": Object {
+          "required": false,
+        },
+        "type": Object {
+          "isArray": false,
+          "type": "ObjectID",
+        },
+      },
+      "receiverType": Object {
+        "options": Object {
+          "required": false,
+        },
+        "type": Object {
+          "enumValues": Array [
+            "all",
+            "tag",
+          ],
+          "isArray": false,
+          "type": "String",
+        },
+      },
+      "receiverValue": Object {
+        "schema": Object {
+          "tagAnd": Object {
+            "options": Object {
+              "required": false,
+            },
+            "type": Object {
+              "isArray": true,
+              "type": "String",
+            },
+          },
+          "tagNot": Object {
+            "options": Object {
+              "required": false,
+            },
+            "type": Object {
+              "isArray": true,
+              "type": "String",
+            },
+          },
+          "tagOr": Object {
+            "options": Object {
+              "required": false,
+            },
+            "type": Object {
+              "isArray": true,
+              "type": "String",
+            },
+          },
+        },
+        "type": Object {
+          "isArray": false,
+          "type": "Embedded",
+        },
+      },
+    },
+    "type": Object {
+      "isArray": true,
+      "type": "Schema",
+    },
+  },
   "ref": Object {
     "options": Object {
       "ref": "Ref",
