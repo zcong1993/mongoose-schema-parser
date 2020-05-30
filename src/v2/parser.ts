@@ -5,6 +5,7 @@ export interface PropertyType {
   isArray?: boolean
   enumValues?: any[]
   $__schemaType?: any
+  rawOpts?: any
 }
 
 export interface ParsedField {
@@ -101,6 +102,14 @@ const parsePaths = (rawPaths: any): ParsedType => {
         res[field].type.isArray = true
       }
     } else {
+      /* istanbul ignore next */
+      res[field] = {
+        type: {
+          type: 'UnHandled',
+          rawOpts: opt
+        }
+      }
+      /* istanbul ignore next */
       console.warn(`unhandled field: ${field}, ${JSON.stringify(opt, null, 2)}`)
     }
   })
