@@ -20,6 +20,15 @@ Object {
       "type": "Number",
     },
   },
+  "bf": Object {
+    "options": Object {
+      "required": false,
+    },
+    "type": Object {
+      "isArray": false,
+      "type": "Buffer",
+    },
+  },
   "bool": Object {
     "options": Object {
       "required": false,
@@ -45,6 +54,24 @@ Object {
     "type": Object {
       "isArray": false,
       "type": "Date",
+    },
+  },
+  "dc": Object {
+    "options": Object {
+      "required": false,
+    },
+    "type": Object {
+      "isArray": false,
+      "type": "Decimal128",
+    },
+  },
+  "dcs": Object {
+    "options": Object {
+      "required": false,
+    },
+    "type": Object {
+      "isArray": true,
+      "type": "Decimal128",
     },
   },
   "directNested": Object {
@@ -131,6 +158,37 @@ Object {
     "type": Object {
       "isArray": false,
       "type": "ObjectID",
+    },
+  },
+  "mixed": Object {
+    "options": Object {
+      "required": false,
+    },
+    "type": Object {
+      "isArray": false,
+      "type": "Mixed",
+    },
+  },
+  "mp": Object {
+    "options": Object {
+      "required": false,
+    },
+    "type": Object {
+      "$__schemaType": SchemaNumber {
+        "$immutable": null,
+        "_index": null,
+        "getters": Array [],
+        "instance": "Number",
+        "options": SchemaNumberOptions {
+          "type": [Function],
+        },
+        "path": "mp.$*",
+        "setters": Array [],
+        "validators": Array [],
+        Symbol(mongoose#schemaType): true,
+      },
+      "isArray": false,
+      "type": "Map",
     },
   },
   "name": Object {

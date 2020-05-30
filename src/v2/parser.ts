@@ -4,6 +4,7 @@ export interface PropertyType {
   type: string
   isArray?: boolean
   enumValues?: any[]
+  $__schemaType?: any
 }
 
 export interface ParsedField {
@@ -31,6 +32,9 @@ const simpleType = (opt: any) => {
   }
   if (opt.options && opt.options.ref) {
     pf.options.ref = opt.options.ref
+  }
+  if (opt.$isSchemaMap) {
+    pf.type.$__schemaType = opt.$__schemaType
   }
 
   return pf
@@ -70,7 +74,17 @@ const parsePaths = (rawPaths: any): ParsedType => {
         schema: parsePaths(opt)
       }
     } else if (
-      ['ObjectID', 'String', 'Number', 'Date', 'Boolean'].includes(opt.instance)
+      [
+        'ObjectID',
+        'String',
+        'Number',
+        'Date',
+        'Boolean',
+        'Mixed',
+        'Buffer',
+        'Map',
+        'Decimal128'
+      ].includes(opt.instance)
     ) {
       res[field] = simpleType(opt)
     } else if (opt.instance === 'Embedded') {
@@ -85,11 +99,9 @@ const parsePaths = (rawPaths: any): ParsedType => {
       } else if (opt.$isMongooseArray) {
         res[field] = simpleType(opt.caster)
         res[field].type.isArray = true
-      } else {
-        console.warn(
-          `unhandled field: ${field}, ${JSON.stringify(opt, null, 2)}`
-        )
       }
+    } else {
+      console.warn(`unhandled field: ${field}, ${JSON.stringify(opt, null, 2)}`)
     }
   })
 

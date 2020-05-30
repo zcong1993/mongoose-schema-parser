@@ -115,7 +115,15 @@ const testSchema = new Schema(
           }
         }
       }
-    ]
+    ],
+    mixed: Schema.Types.Mixed,
+    bf: Buffer,
+    mp: {
+      type: Map,
+      of: Number
+    },
+    dc: mongoose.Types.Decimal128,
+    dcs: [mongoose.Types.Decimal128]
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 )
