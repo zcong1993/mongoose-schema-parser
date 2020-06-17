@@ -1,5 +1,7 @@
-import { Schema } from 'mongoose'
-import { parseSchema, ParsedType, TypeEnum } from '../src'
+import * as mongoose from 'mongoose'
+import { parseSchema } from '../src'
+
+const { Schema } = mongoose
 
 const ObjectId = Schema.Types.ObjectId
 
@@ -7,263 +9,126 @@ const nestedSchema = new Schema({
   nestedName: String
 })
 
-const testSchema = new Schema({
-  id: ObjectId,
-  name: String,
-  age: {
-    type: Number
+const refSchema = new Schema(
+  {
+    refName: String
   },
-  requiredName: {
-    type: String,
-    required: true
-  },
-  enumString: {
-    type: String,
-    enum: ['test1', 'test2']
-  },
-  date: Date,
-  bool: Boolean,
-  nested: nestedSchema,
-  nestedArr: [nestedSchema],
-  nestedArr2: [
-    {
-      type: nestedSchema
-    }
-  ],
-  simpleArr: [String],
-  simpleArr2: [
-    {
-      type: String
-    }
-  ],
-  directNested: {
+  { timestamps: true }
+)
+
+const testSchema = new Schema(
+  {
+    id: ObjectId,
     name: String,
-    age: Number
-  },
-  directNestedArr: [
-    {
+    age: {
+      type: Number
+    },
+    requiredName: {
+      type: String,
+      required: true
+    },
+    enumString: {
+      type: String,
+      enum: ['test1', 'test2']
+    },
+    date: Date,
+    bool: Boolean,
+    nested: nestedSchema,
+    nestedArr: [nestedSchema],
+    nestedArr2: [
+      {
+        type: nestedSchema
+      }
+    ],
+    simpleArr: [String],
+    simpleArr2: [
+      {
+        type: String
+      }
+    ],
+    directNested: {
       name: String,
       age: Number
-    }
-  ],
-  ref: {
-    type: ObjectId,
-    ref: 'Test'
-  },
-  refs: [
-    {
+    },
+    directNestedArr: [
+      {
+        name: String,
+        age: Number
+      }
+    ],
+    ref: {
       type: ObjectId,
-      ref: 'Test'
-    }
-  ],
-  withTypeField: [
-    {
-      type: {
-        type: String
-      },
-      other: String
-    }
-  ]
-})
-
-const expectResult: ParsedType = {
-  id: {
-    type: {
-      type: TypeEnum.ObjectId,
-      isArray: false
-    }
-  },
-  name: {
-    type: {
-      type: TypeEnum.String,
-      isArray: false
-    }
-  },
-  age: {
-    type: {
-      type: TypeEnum.Number,
-      isArray: false
+      ref: 'Ref'
     },
-    details: {}
-  },
-  requiredName: {
-    type: {
-      type: TypeEnum.String,
-      isArray: false
-    },
-    details: {
-      required: true
-    }
-  },
-  enumString: {
-    type: {
-      type: TypeEnum.String,
-      isArray: false
-    },
-    details: {
-      enum: ['test1', 'test2']
-    }
-  },
-  date: {
-    type: {
-      type: TypeEnum.Date,
-      isArray: false
-    }
-  },
-  bool: {
-    type: {
-      type: TypeEnum.Boolean,
-      isArray: false
-    }
-  },
-  nested: {
-    type: {
-      type: TypeEnum.Schema,
-      isArray: false
-    },
-    schema: {
-      nestedName: {
-        type: {
-          type: TypeEnum.String,
-          isArray: false
-        }
+    refs: [
+      {
+        type: ObjectId,
+        ref: 'Ref'
       }
-    }
-  },
-  nestedArr: {
-    type: {
-      type: TypeEnum.Schema,
-      isArray: true
-    },
-    schema: {
-      nestedName: {
+    ],
+    withTypeField: [
+      {
         type: {
-          type: TypeEnum.String,
-          isArray: false
-        }
-      }
-    }
-  },
-  nestedArr2: {
-    details: {},
-    type: {
-      type: TypeEnum.Schema,
-      isArray: true
-    },
-    schema: {
-      type: {
-        type: {
-          type: TypeEnum.Schema,
-          isArray: false
+          type: String
         },
-        schema: {
-          nestedName: {
-            type: {
-              type: TypeEnum.String,
-              isArray: false
-            }
+        other: String
+      }
+    ],
+    receiver: {
+      receiverType: {
+        type: String,
+        enum: ['all', 'tag']
+      },
+      receiverValue: {
+        tagAnd: {
+          type: [String],
+          default: []
+        },
+        tagOr: {
+          type: [String],
+          default: []
+        },
+        tagNot: {
+          type: [String],
+          default: []
+        }
+      }
+    },
+    receivers: [
+      {
+        receiverType: {
+          type: String,
+          enum: ['all', 'tag']
+        },
+        receiverValue: {
+          tagAnd: {
+            type: [String],
+            default: []
+          },
+          tagOr: {
+            type: [String],
+            default: []
+          },
+          tagNot: {
+            type: [String],
+            default: []
           }
         }
       }
-    }
-  },
-  simpleArr: {
-    type: {
-      type: TypeEnum.String,
-      isArray: true
-    }
-  },
-  simpleArr2: {
-    details: {},
-    type: {
-      type: TypeEnum.String,
-      isArray: true
-    }
-  },
-  directNested: {
-    type: {
-      type: TypeEnum.Schema,
-      isArray: false
+    ],
+    mixed: Schema.Types.Mixed,
+    bf: Buffer,
+    mp: {
+      type: Map,
+      of: Number
     },
-    schema: {
-      name: {
-        type: {
-          type: TypeEnum.String,
-          isArray: false
-        }
-      },
-      age: {
-        type: {
-          type: TypeEnum.Number,
-          isArray: false
-        }
-      }
-    }
+    dc: mongoose.Types.Decimal128,
+    dcs: [mongoose.Types.Decimal128]
   },
-  directNestedArr: {
-    type: {
-      type: TypeEnum.Schema,
-      isArray: true
-    },
-    schema: {
-      name: {
-        type: {
-          type: TypeEnum.String,
-          isArray: false
-        }
-      },
-      age: {
-        type: {
-          type: TypeEnum.Number,
-          isArray: false
-        }
-      }
-    }
-  },
-  ref: {
-    type: {
-      type: TypeEnum.ObjectId,
-      isArray: false
-    },
-    details: {
-      ref: 'Test'
-    }
-  },
-  refs: {
-    details: {
-      ref: 'Test'
-    },
-    type: {
-      type: TypeEnum.ObjectId,
-      isArray: true
-    }
-  },
-  withTypeField: {
-    details: {
-      other: String
-    },
-    type: {
-      type: TypeEnum.Schema,
-      isArray: true
-    },
-    schema: {
-      type: {
-        type: {
-          type: TypeEnum.String,
-          isArray: false
-        },
-        details: {}
-      },
-      other: {
-        type: {
-          type: TypeEnum.String,
-          isArray: false
-        }
-      }
-    }
-  }
-}
+  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
+)
 
-it('should work well', () => {
-  expect(parseSchema(testSchema)).toEqual(expectResult)
+it('v2 should works well', () => {
+  const res = parseSchema(testSchema)
+  expect(res).toMatchSnapshot()
 })

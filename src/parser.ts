@@ -1,27 +1,16 @@
-// fork from https://github.com/medolino/mongoose-schema-parser
-// add result type, use type enum and make it easy to detect whether
-// propertyField is array
-import { Schema, SchemaTypeOpts } from 'mongoose'
-
-export enum TypeEnum {
-  Unknown = 'Unknow',
-  String = 'String',
-  Number = 'Number',
-  Date = 'Date',
-  Boolean = 'Boolean',
-  ObjectId = 'ObjectId',
-  Object = 'Object',
-  Schema = 'Schema'
-}
+import { Schema } from 'mongoose'
 
 export interface PropertyType {
-  type: TypeEnum
+  type: string
   isArray?: boolean
+  enumValues?: any[]
+  $__schemaType?: any
+  rawOpts?: any
 }
 
 export interface ParsedField {
   type: PropertyType
-  details?: SchemaTypeOpts<any> & { required?: boolean }
+  options?: { required?: boolean; ref?: string }
   schema?: ParsedType
 }
 
@@ -29,199 +18,105 @@ export interface ParsedType {
   [key: string]: ParsedField
 }
 
-const getTypeFromString = (type: string): TypeEnum => {
-  switch (type) {
-    case 'String':
-      return TypeEnum.String
-    case 'Number':
-      return TypeEnum.Number
-    case 'Date':
-      return TypeEnum.Date
-    case 'Boolean':
-      return TypeEnum.Boolean
-    case 'ObjectId':
-      return TypeEnum.ObjectId
-    case 'Schema':
-      return TypeEnum.Schema
-    default:
-      return TypeEnum.Unknown
+const simpleType = (opt: any) => {
+  const pf: ParsedField = {
+    type: {
+      type: opt.instance,
+      isArray: false
+    },
+    options: {
+      required: !!opt.isRequired
+    }
   }
-}
-
-export const getSchemaObject = (schema: Schema | Schema[]) => {
-  let obj: any = {}
-  if (Array.isArray(schema)) {
-    obj = schema[0].obj ? schema[0].obj : schema[0]
-  } else if (schema.obj) {
-    obj = schema.obj
-  } else if ((schema as any).type) {
-    obj = getSchemaObject((schema as any).type)
-  } else {
-    obj = schema
+  if (Array.isArray(opt.enumValues) && opt.enumValues.length > 0) {
+    pf.type.enumValues = opt.enumValues
+  }
+  if (opt.options && opt.options.ref) {
+    pf.options.ref = opt.options.ref
+  }
+  if (opt.$isSchemaMap) {
+    pf.type.$__schemaType = opt.$__schemaType
   }
 
-  return obj
+  return pf
 }
 
-export const parseSchema = (schema: Schema): ParsedType => {
-  const schemaObj = getSchemaObject(schema)
-  const parsedSchema: ParsedType = {}
-  Object.keys(schemaObj).forEach((propertyName: string) => {
-    const property = schemaObj[propertyName]
-    const propertyType = getPropertyType(property)
+const unflatten = (data: any): any => {
+  const result: any = {}
+  for (const i in data) {
+    const keys = i.split('.')
+    keys.reduce((r, e, j) => {
+      return (
+        r[e] ||
+        (r[e] = isNaN(Number(keys[j + 1]))
+          ? keys.length - 1 === j
+            ? data[i]
+            : { __flattened__: true }
+          : [])
+      )
+    }, result)
+  }
+  return result
+}
 
-    parsedSchema[propertyName] = {
-      type: propertyType
-    }
+const parsePaths = (rawPaths: any): ParsedType => {
+  const paths = unflatten(rawPaths)
+  const res: ParsedType = {}
+  Object.keys(paths).forEach((field: string) => {
+    const opt = paths[field]
 
-    const propertyDetails = parsePropertyDetails(property)
-    if (propertyDetails) {
-      parsedSchema[propertyName].details = propertyDetails
-    }
-
-    // parse Schema
-    if (propertyType.type === TypeEnum.Schema && !propertyType.isArray) {
-      // normal schema
-      let propSchema
-      if (property.hasOwnProperty('obj') || property.hasOwnProperty('type')) {
-        propSchema = property
-      } else {
-        // schema defined as object
-        propSchema = { obj: property, options: {} }
+    if (opt.__flattened__) {
+      delete opt.__flattened__
+      res[field] = {
+        type: {
+          type: 'Embedded',
+          isArray: false
+        },
+        schema: parsePaths(opt)
       }
-
-      parsedSchema[propertyName].schema = parseSchema(propSchema)
-    }
-
-    // check if nested schema
-    if (propertyType.type === TypeEnum.Schema && propertyType.isArray) {
-      // console.log(propertyType, property)
-      parsedSchema[propertyName].schema = parseSchema(property)
+    } else if (
+      [
+        'ObjectID',
+        'String',
+        'Number',
+        'Date',
+        'Boolean',
+        'Mixed',
+        'Buffer',
+        'Map',
+        'Decimal128'
+      ].includes(opt.instance)
+    ) {
+      res[field] = simpleType(opt)
+    } else if (opt.instance === 'Embedded') {
+      res[field] = simpleType(opt)
+      res[field].schema = parsePaths(opt.schema.paths)
+    } else if (opt.instance === 'Array') {
+      if (opt.$isMongooseDocumentArray) {
+        res[field] = simpleType(opt)
+        res[field].type.type = 'Schema'
+        res[field].type.isArray = true
+        res[field].schema = parsePaths(opt.schema.paths)
+      } else if (opt.$isMongooseArray) {
+        res[field] = simpleType(opt.caster)
+        res[field].type.isArray = true
+      }
+    } else {
+      /* istanbul ignore next */
+      res[field] = {
+        type: {
+          type: 'UnHandled',
+          rawOpts: opt
+        }
+      }
+      /* istanbul ignore next */
+      console.warn(`unhandled field: ${field}, ${JSON.stringify(opt, null, 2)}`)
     }
   })
 
-  return parsedSchema
+  return res
 }
 
-export const parsePropertyDetails = (p: any) => {
-  let property: any
-  if (Array.isArray(p) && p.length > 0) {
-    property = p[0]
-  } else {
-    property = p
-  }
-  if (!property.type) {
-    return undefined
-  }
-
-  const detailNames = Object.keys(property)
-
-  const details = detailNames
-    .filter(propName => propName !== 'type')
-    .reduce(
-      (details, propName) => {
-        switch (propName) {
-          case 'required': // convert to boolean
-            details.required = !!property[propName]
-            break
-          default:
-            details[propName] = property[propName]
-        }
-
-        return details
-      },
-      {} as any
-    )
-
-  return detailNames.length > 0 ? details : undefined
-}
-
-export const getPropertyType = (property: any): PropertyType => {
-  let type: PropertyType = {
-    type: TypeEnum.Unknown,
-    isArray: false
-  }
-
-  /* istanbul ignore else  */
-  if (property.type && property.type.name) {
-    // simple type
-    type.type = getTypeFromString(property.type.name)
-  } else if (property.type) {
-    // nested item defined as type
-    type = getPropertyType(property.type)
-  } else if (property.constructor.name) {
-    // array, object, function, string or schema
-    type = getPropertyTypeFromConstructor(property)
-  }
-
-  return type
-}
-
-const getPropertyTypeFromConstructor = (property: any): PropertyType => {
-  const constructorName = property.constructor.name
-
-  let type: PropertyType = {
-    type: TypeEnum.Unknown,
-    isArray: false
-  }
-
-  switch (constructorName) {
-    case 'Array':
-      type = getMongooseArrayType(property)
-      break
-    case 'Function': // simple type (e.g. String,...)
-      type.type = getTypeFromString(property.name)
-      break
-    case 'Object': // Object or Schema
-      type.type = !Object.keys(property).length
-        ? TypeEnum.Object
-        : TypeEnum.Schema
-      break
-    default:
-      type.type = getTypeFromString(constructorName)
-  }
-
-  return type
-}
-
-const getMongooseArrayType = (arrayDetails: any): PropertyType => {
-  const type: PropertyType = {
-    type: TypeEnum.Unknown,
-    isArray: true
-  }
-
-  if (arrayDetails.length > 0) {
-    // check if array content type is provided
-    const details = arrayDetails[0]
-
-    // details.name -> simpleTypes [String]
-    // details.constructor.name -> Schema, Object
-
-    // ignore details.name if name is schemas property
-    const isNameSchemaProperty =
-      ['object', 'function'].indexOf(typeof details.name) !== -1
-
-    let arrayContentType: TypeEnum = !isNameSchemaProperty
-      ? getTypeFromString(details.name)
-      : TypeEnum.Unknown
-
-    if (arrayContentType === TypeEnum.Unknown) {
-      // I am assuming it goes for schema, if Object is present inside Array type definition (e.g. field:[{...objProps...}])
-      arrayContentType =
-        details.constructor.name === 'Object'
-          ? TypeEnum.Schema
-          : getTypeFromString(details.constructor.name)
-
-      if (details.type && details.type.constructor.name !== 'Object') {
-        // [{ type: ObjectId }] without [{ type: { type: String } }]
-        const innerType = getPropertyType(details.type)
-
-        arrayContentType = innerType.type
-      }
-    }
-
-    type.type = arrayContentType
-  }
-
-  return type
+export const parseSchema = (schema: Schema): ParsedType => {
+  return parsePaths((schema as any).paths)
 }
